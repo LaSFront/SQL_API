@@ -1,9 +1,10 @@
 package ru.netology.api.data;
 
 import com.github.javafaker.Faker;
-import lombok.Data;
 import lombok.Value;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -21,7 +22,7 @@ public class DataHelper {
         private String password;
     }
 
-     public static AuthInfo getUser() {
+    public static AuthInfo getUser() {
         return new AuthInfo("vasya", "qwerty123");
     }
 
@@ -35,21 +36,46 @@ public class DataHelper {
     public static VerifyInfo getVerifyCode() {
         return new VerifyInfo(getUser().getLogin(), SQLHelper.getVerifyData());
     }
+    //cards
 
-    //CARDS
-    @Data
-    public static class CardInfo {
-        private String id;
-        private String number;
-        private String balance;
+
+    @Value
+    public static class Transfer {
+        private String from;
+        private String to;
+        private Integer amount;
+
     }
 
-    public static int generateRandomTransferAmount(int balance) {
+    public static Transfer transfer(String token) {
+        Random random = new Random();
+        List<CardInfo> cards = SQLHelper.getCards();
+        final int cardFromRandom = random.nextInt(cards.size());
+        CardInfo cardFrom = cards.get(cardFromRandom);
+        cards.remove(cardFrom);
+        final int cardToRandom = random.nextInt(cards.size());
+        CardInfo cardTo = cards.get(cardToRandom);
+        final int amountToTransfer = generateAmountValid(cardFrom.getBalance() / 100);
+        return new Transfer(cardFrom.getNumber(), cardTo.getNumber(), amountToTransfer);
+    }
+
+    public static int generateAmountValid(int balance) {
         return new Random().nextInt(Math.abs(balance)) + 1;
     }
 
-    public static String selectCard(CardInfo cardInfo) {
-        var cardForTransfer = cardInfo.getNumber();
-        return cardForTransfer;
+    public static Transfer transferInvalid(String token) {
+        Random random = new Random();
+        List<CardInfo> cards = SQLHelper.getCards();
+        final int cardFromRandom = random.nextInt(cards.size());
+        CardInfo cardFrom = cards.get(cardFromRandom);
+        cards.remove(cardFrom);
+        final int cardToRandom = random.nextInt(cards.size());
+        CardInfo cardTo = cards.get(cardToRandom);
+        final int amountToTransfer = generateAmountInvalid(cardFrom.getBalance() / 100);
+        return new Transfer(cardFrom.getNumber(), cardTo.getNumber(), amountToTransfer);
+    }
+
+    public static int generateAmountInvalid(int balance) {
+        return Math.abs(balance) + new Random().nextInt(1000);
     }
 }
