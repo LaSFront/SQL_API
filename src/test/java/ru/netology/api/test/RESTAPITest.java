@@ -44,8 +44,8 @@ public class RESTAPITest {
     }
 
     @Test
-    @DisplayName("Should do transfer success")
-    void shouldDoTransferInvalid() {
+    @DisplayName("Should transfer be invalid")
+    void shouldTransferBeInvalid() {
         var user = DataHelper.getUser();
         authentication(user, 200);
 
@@ -53,9 +53,8 @@ public class RESTAPITest {
         String token = verification(actualCode, 200);
         System.out.println(ArrayUtils.toString(getCards(token)));
 
-        transactionInvalid(token, 200);
+        transactionInvalid(token, 400);
         System.out.println(ArrayUtils.toString(getCards(token)));
-
     }
 }
 
