@@ -40,8 +40,30 @@ public class SQLHelper {
 
     @SneakyThrows
     public static List<CardInfo> getCards() {
-        var codeSQLQuery = "SELECT id, number, balance_in_kopecks as balance FROM cards ORDER BY id";
+        var SQLQuery = "SELECT id, number, balance_in_kopecks as balance FROM cards ORDER BY id";
         var connection = getConn();
-        return runner.query(connection, codeSQLQuery, new BeanListHandler<>(CardInfo.class));
+        return runner.query(connection, SQLQuery, new BeanListHandler<>(CardInfo.class));
+    }
+
+    //@SneakyThrows
+    //public static Integer getAmount() {
+    //    var SQLQuery = "SELECT amount_in_kopecks FROM card_transactions ORDER BY created DESC LIMIT 1";
+    //    var connection = getConn();
+    //    return runner.query(connection, SQLQuery, new ScalarHandler<>());
+    //}
+
+    @SneakyThrows
+    public static Integer getBalanceCardFromAfterTransfer() {
+        var SQLQuery = "SELECT balance_in_kopecks FROM cards WHERE `number` IN (SELECT source FROM card_transactions)";
+        var connection = getConn();
+        return runner.query(connection, SQLQuery, new ScalarHandler<>());
+    }
+
+    @SneakyThrows
+    public static Integer getBalanceCardToAfterTransfer() {
+        var SQLQuery = "SELECT balance_in_kopecks FROM cards WHERE `number` IN (SELECT target FROM card_transactions)";
+        var connection = getConn();
+        return runner.query(connection, SQLQuery, new ScalarHandler<>());
     }
 }
+

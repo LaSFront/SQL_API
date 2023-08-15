@@ -65,29 +65,15 @@ public class APIHelper {
                 .response().getBody().as(CardInfo[].class);
     }
 
-    public static void transaction(String token, Integer statusCode) {
+    public static void transaction(String token, Integer statusCode, Integer amount) {
         given()
                 .spec(specification)
                 .header("Authorization", "Bearer " + token)
-                .body(transfer(token))
+                .body(transfer(token, amount))
                 .when()
                 .post("/transfer")
                 .then()
                 .statusCode(statusCode)
         ;
     }
-
-    public static void transactionInvalid(String token, Integer statusCode) {
-        given()
-                .spec(specification)
-                .header("Authorization", "Bearer " + token)
-                .body(transferInvalid(token))
-                .when()
-                .post("/transfer")
-                .then()
-                .statusCode(statusCode)
-        ;
-    }
-
-
 }
